@@ -1,0 +1,12 @@
+# No bundled SDK, APK, signatures or personal diagnostics
+.gradle/
+**/build/
+local.properties
+*.apk
+*.aab
+*.jks
+*.keystore
+*.log
+.idea/
+captures/
+reports/
