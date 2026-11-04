@@ -26,6 +26,20 @@
 - [ ] Report locale e screenshot testati
 - [ ] Monitorare RAM e temperatura durante i primi test
 
+## P0.4 — Aggiornamenti dall'app (in corso)
+
+- [x] Impostazioni → Aggiornamenti, lingua EN/IT/FR, canali stabile/beta
+- [x] Download solo da release GitHub ufficiali via HTTPS e verifica SHA-256
+- [x] Controlli packageName, numero versione e conferma del PackageInstaller Android
+- [x] Workflow manuale di release firmate, che rifiuta pubblicazioni senza segreti
+- [x] VersionCode progressivi, distinti tra beta e stabile
+- [ ] Configurare una volta la chiave di firma privata permanente nei segreti GitHub
+- [ ] Pubblicare prima beta firmata e verificare l'APK sul Galaxy S24 FE
+- [ ] Pubblicare una seconda versione con la medesima firma e provarne aggiornamento e conservazione dati
+- [ ] Verificare le lingue, il canale stabile/beta, gli errori di rete, lo spazio disco e le interruzioni download
+
+**Limite:** la vecchia versione 0.3 debug usa una firma effimera e non può essere aggiornata in modo affidabile a quella con firma definitiva. I dati di Ai-orchestrator-riserva non sono coinvolti. Vedi [UPDATES.md](UPDATES.md).
+
 ## P1 — Primo vero programma Windows
 - Valutare versione e licenza dei sorgenti originali Winlator, Wine, Box64 e Mesa
 - Scoprire se l'hardware Exynos / Xclipse ha percorso grafico compatibile (possibile VirGL/Zink/Vortek; Turnip è per Adreno)
