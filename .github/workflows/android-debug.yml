@@ -12,7 +12,7 @@ on:
       - ".github/workflows/android-debug.yml"
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   debug-apk:
@@ -55,14 +55,37 @@ jobs:
           grep -Fq 'connect.setEnabled(false)' "$MAIN"
           grep -Fq 'remoteAccess.stop()' "$MAIN"
           grep -Fq 'return false; // No authenticated relay/connector exists in P0.' "$GATE"
-          if grep -Fq 'android.permission.INTERNET' "$MANIFEST"; then
-            echo '::error::P0.2 may not request INTERNET permission'
+          grep -Fq 'android.permission.INTERNET' "$MANIFEST"
+          grep -Fq 'android.permission.ACCESS_NETWORK_STATE' "$MANIFEST"
+          grep -Fq 'GuestNetworkPolicy.isGuestNetworkAllowed(this)' "$MAIN"
+          grep -Fq 'connect.setEnabled(false)' "$MAIN"
+          grep -Fq 'getBoolean(GUEST_NETWORK, false)' app/src/main/java/org/aemulwin/GuestNetworkPolicy.java
+          # The P0 diagnostic build is not permitted to contain network clients/listeners.
+          if grep -R -E 'java[.]net[.]Socket|ServerSocket|HttpURLConnection|OkHttpClient|WebSocket|android[.]webkit[.]WebView' app/src/main/java; then
+            echo '::error::P0 must not start a network transport'
             exit 1
           fi
-          echo 'Three-language menu and offline remote access default: PASS'
+          echo 'Three-language menu, guest-network consent and remote-off safeguards: PASS'
       - uses: actions/upload-artifact@v4
         with:
           name: AEmulWin-P0-debug-APK
           path: app/build/outputs/apk/debug/app-debug.apk
           retention-days: 7
           if-no-files-found: error
+      - name: Publish directly downloadable Android P0.3 test APK
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          TAG=v0.3.0-test
+          APK=app/build/outputs/apk/debug/app-debug.apk
+          test -s "$APK"
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "Prerelase $TAG already exists; leaving it unchanged."
+            exit 0
+          fi
+          cp "$APK" AEmulWin-0.3.0-test.apk
+          sha256sum AEmulWin-0.3.0-test.apk > AEmulWin-0.3.0-test.sha256
+          gh release create "$TAG" AEmulWin-0.3.0-test.apk AEmulWin-0.3.0-test.sha256             --repo "$GITHUB_REPOSITORY" --prerelease             --title "AEmulWin 0.3.0 — first S24 test (diagnostics only)"             --notes "Standalone Android test APK with EN/IT/FR, device diagnostics, guest Internet preference and remote session disabled. It DOES NOT run Windows programs yet. Debug signing may differ from previous CI builds: do not attempt to update another app. No changes to Ai-orchestrator-riserva or WEmulDroid."
