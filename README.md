@@ -24,13 +24,22 @@ L'applicazione in questa fase non richiede permessi di rete né accesso a file p
 - [Ponte remoto opt-in: progettazione](docs/REMOTE_CONTROL.md)
 - [Scelta del motore e condizioni di licenza](docs/ENGINE_RESEARCH.md)
 
-## Build
+## Prima APK diagnostica (build verificata)
 
-Progetto Android Java/Gradle minimale. La CI compila una APK **debug** quando il repository contiene tutti i file e pubblica un artefatto temporaneo di prova; l'esito CI non dimostra che il runtime Wine/Box64 funzioni.
+La prima APK debug compilata è disponibile nel workflow [Android P0 smoke APK — PASS](https://github.com/pilialvu75-hue/AEmulWin/actions/runs/41749819008) come artefatto **AEmulWin-P0-debug-APK** (ZIP contenente app-debug.apk). La pubblicazione dell'artefatto è temporanea, secondo la politica GitHub Actions impostata a 7 giorni.
+
+Per provarla su Galaxy S24 FE:
+1. Apri il workflow GitHub da un browser con accesso all'account.
+2. Scarica l'artefatto AEmulWin-P0-debug-APK.
+3. Estrai l'APK dallo ZIP e installa l'app AEmulWin, autorizzando l'installazione esterna solo se richiesta.
+4. Apri AEmulWin e premi **Analizza questo telefono**. Se desideri, premi **Copia diagnosi** e incolla il report nella chat.
+5. Non eseguire giochi o test pesanti: questa fase serve soltanto a verificare l'app e le informazioni hardware.
+
+**La CI Android ha completato la compilazione, ma l'installazione e l'apertura dell'app sul telefono fisico non sono state ancora verificate.** La prima APK non contiene un motore Windows e non ha funzioni di aggiornamento automatico; una modalità di aggiornamento in-app controllata sarà valutata successivamente.
 
 ## Indirizzo GitHub
 
-Questo progetto è stato inizializzato nel repository vuoto pilialvu75-hue/Ai-orchestrator-riservas per evitare di crearne uno nuovo. **Rinominarlo appena possibile in AEmulWin** usando GitHub Settings → General → Repository name, per evitare confusione col progetto principale.
+Il repository originariamente vuoto è stato rinominato correttamente in **pilialvu75-hue/AEmulWin**. Rimane distinto dal progetto principale Ai-orchestrator-riserva.
 
 ## Licenze
 
