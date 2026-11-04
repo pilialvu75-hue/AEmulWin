@@ -36,7 +36,7 @@ final class UpdateClient {
     static final String REPO = "pilialvu75-hue/AEmulWin";
     private static final String API = "https://api.github.com/repos/" + REPO + "/releases?per_page=20";
     private static final long MAX_APK = 1024L * 1024L * 1024L;
-    private static final Pattern VERSION = Pattern.compile("^v?(\\d+)\\.(\\d+)\\.(\\d+)(?:[-+].*)?$");
+    private static final Pattern VERSION = Pattern.compile("^v?(\\d+)\\.(\\d+)\\.(\\d+)(?:-(beta|rc)\\.(\\d+))?$");
     private static final String DOWNLOAD_PREFIX = "https://github.com/" + REPO + "/releases/download/";
 
     static final class Candidate {
@@ -62,9 +62,16 @@ final class UpdateClient {
             long y = Long.parseLong(b.group(i));
             if (x != y) return x > y ? 1 : -1;
         }
-        boolean aPre = left.matches(".*-[^+]+.*");
-        boolean bPre = right.matches(".*-[^+]+.*");
-        if (aPre != bPre) return aPre ? -1 : 1;
+        int aRank = "beta".equals(a.group(4)) ? 0 :
+                "rc".equals(a.group(4)) ? 1 : 2;
+        int bRank = "beta".equals(b.group(4)) ? 0 :
+                "rc".equals(b.group(4)) ? 1 : 2;
+        if (aRank != bRank) return aRank > bRank ? 1 : -1;
+        if (aRank < 2) {
+            long x = Long.parseLong(a.group(5));
+            long y = Long.parseLong(b.group(5));
+            return Long.compare(x, y);
+        }
         return 0;
     }
 
