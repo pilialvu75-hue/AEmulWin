@@ -199,8 +199,10 @@ final class UpdateClient {
                     throw new SecurityException("Not an APK");
                 }
             }
+            // Android's archive parser is more reliable with the final .apk extension.
+            if (!partial.renameTo(result)) throw new IllegalStateException("Failed to stage APK");
             PackageInfo archive = activity.getPackageManager().getPackageArchiveInfo(
-                    partial.getAbsolutePath(), 0);
+                    result.getAbsolutePath(), 0);
             if (archive == null || !activity.getPackageName().equals(archive.packageName)) {
                 throw new SecurityException("APK belongs to another application");
             }
@@ -209,8 +211,10 @@ final class UpdateClient {
             if (archive.getLongVersionCode() <= installed.getLongVersionCode()) {
                 throw new SecurityException("APK versionCode is not newer");
             }
-            if (!partial.renameTo(result)) throw new IllegalStateException("Failed to stage APK");
             return result;
+        } catch (Exception error) {
+            if (result.exists()) result.delete();
+            throw error;
         } finally {
             connection.disconnect();
             if (partial.exists()) partial.delete();
