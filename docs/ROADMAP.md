@@ -16,8 +16,13 @@
 - [x] Menu connessione con stato scollegato, attivazione bloccata e stop/revoca disponibile (nessuna rete/porta attiva)
 - [ ] Verificare sul Galaxy tutte le 3 lingue, salvataggio scelta e menu connessione
 - [x] Prima compilazione diagnostica Android P0 con CI PASS
-- [ ] Compilazione Android P0.2 (lingue e menu connessione) con CI PASS
+- [x] Compilazione Android P0.3 (lingue, menu rete e connessione) con CI PASS
+- [x] APK P0.3 pubblicata come release GitHub con download diretto per smartphone
+- [x] Permessi Android INTERNET / ACCESS_NETWORK_STATE disponibili per i programmi Windows futuri
+- [x] Preferenza Internet programmi Windows (OFF iniziale) distinta da remoto, oggi non operativa
+- [ ] Dimostrare nel futuro motore che lo switch OFF blocchi davvero le connessioni dei programmi Windows
 - [ ] Installazione e avvio sul Samsung reale
+- [ ] Test persistenza preferenza rete Windows e sua indipendenza dal comando remoto
 - [ ] Report locale e screenshot testati
 - [ ] Monitorare RAM e temperatura durante i primi test
 
