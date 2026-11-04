@@ -2,7 +2,7 @@
 
 ## Principi vincolanti
 
-- Repository indipendente, da rinominare AEmulWin.
+- Repository ufficiale e indipendente: `pilialvu75-hue/AEmulWin` (rinomina verificata).
 - Non aprire PR, non toccare file e non avviare build in Ai-orchestrator-riserva, WEmulDroid o altri progetti.
 - Primo target: Samsung Galaxy S24 FE, ARM64, 8 GB RAM: test brevi, controllare surriscaldamento e memoria disponibile.
 - Non affermare che la shell Android sia già un emulatore Windows.
@@ -12,7 +12,11 @@
 - [x] Separazione repo e primo launcher Android senza rete
 - [x] Diagnostica risorse, ABI, display e batteria
 - [x] Ponte remoto disabilitato per impostazione predefinita
-- [ ] Compilazione Android debug con CI PASS
+- [x] Menu lingua English / Italiano / Français con scelta persistente (collaudo reale da fare)
+- [x] Menu connessione con stato scollegato, attivazione bloccata e stop/revoca disponibile (nessuna rete/porta attiva)
+- [ ] Verificare sul Galaxy tutte le 3 lingue, salvataggio scelta e menu connessione
+- [x] Prima compilazione diagnostica Android P0 con CI PASS
+- [ ] Compilazione Android P0.2 (lingue e menu connessione) con CI PASS
 - [ ] Installazione e avvio sul Samsung reale
 - [ ] Report locale e screenshot testati
 - [ ] Monitorare RAM e temperatura durante i primi test
@@ -42,6 +46,12 @@
 - Vietata esecuzione shell Android arbitraria, accesso ad altre app o ai dati privati
 - Audit locale e revisione prima di inviare log o screenshot
 - Ponte compatibile con un connettore effettivamente utilizzabile da ChatGPT; senza quel componente l'assistente non può entrare nel telefono
+
+## P4 — Progetto HUB Android (parcheggiato, non da implementare ora)
+- Connettore indipendente che collega un agente autorizzato ad AEmulWin e, in futuro, ad altre app Android che scelgono di integrarlo.
+- Nessuna modifica ad Ai-orchestrator-riserva nella fase attuale; qualsiasi interfaccia verso quel progetto sarà valutata separatamente.
+- Il connettore deve separare app, credenziali, ambiti e autorizzazioni; nessun accesso generalizzato al telefono.
+- Requisiti e valutazioni preliminari documentati in [ANDROID_HUB_FUTURE.md](ANDROID_HUB_FUTURE.md).
 
 ## Criteri di accettazione
 1. L'app diagnostica si apre sul telefono senza permessi extra.
