@@ -10,8 +10,8 @@ android {
         applicationId 'org.aemulwin'
         minSdk 28
         targetSdk 35
-        versionCode 4
-        versionName '0.4.0'
+        versionCode (project.findProperty('aemulwinVersionCode')?.toString()?.toInteger() ?: 4)
+        versionName (project.findProperty('aemulwinVersionName')?.toString() ?: '0.4.0')
     }
 
     // Consistent signing is mandatory for in-app updates. Secrets are supplied
