@@ -1,6 +1,6 @@
 # Progettazione — ponte di controllo temporaneo AEmulWin
 
-**Stato: soltanto progettazione. Nessuna API remota implementata, nessuna porta aperta, nessun token distribuito.** La prima APK di prova non richiede il permesso INTERNET.
+**Stato: menu locale implementato nella APK P0.2, ma trasporto remoto NON implementato.** La schermata permette di verificare lo stato «SCOLLEGATO» e di premere «Interrompi / revoca», mentre «Attiva sessione» resta DISABILITATO. Nessuna API remota, nessuna porta aperta, nessun token, nessun permesso INTERNET.
 
 ## Perché non una porta sempre aperta
 Un server HTTP accessibile da Internet sul telefono sarebbe fragile (NAT, cambio IP, limitazioni Android in background) e molto rischioso. ChatGPT non possiede automaticamente l'accesso di rete o un client per usarlo.
@@ -8,9 +8,9 @@ Un server HTTP accessibile da Internet sul telefono sarebbe fragile (NAT, cambio
 Proposta: l'app, dopo un consenso manuale, apre una sessione **in uscita** verso un relay HTTPS autenticato. Un agente autorizzato usa un connettore separato per comunicare col relay; il relay inoltra soltanto operazioni limitate all'ambiente Windows virtualizzato.
 
 ## Processo di autorizzazione
-1. L'utente preme **Abilita collaudo remoto** dentro AEmulWin, quando la funzione esisterà.
+1. L'utente preme **Abilita collaudo remoto** nel menu Connessione, **solo quando la futura versione con relay autenticato sarà stata collaudata**. Nella P0.2 il pulsante è visibile ma non selezionabile.
 2. L'app mostra durata breve, elenco dei permessi richiesti e un codice di pairing a uso singolo.
-3. L'utente conferma la connessione e può interromperla con un pulsante sempre visibile.
+3. L'utente conferma la connessione e può interromperla dall'app con un pulsante disponibile in qualsiasi momento. La futura implementazione deve interrompere davvero il trasporto e revocare i token, non soltanto cambiare un'etichetta.
 4. Screenshot e log potenzialmente personali richiedono consenso specifico, con revisione locale.
 5. La sessione scade ed elimina le credenziali effimere; nessuna attivazione automatica al riavvio.
 6. I comandi e le risposte vengono auditati localmente e con limiti di frequenza/volume.
@@ -39,3 +39,12 @@ Proposta: l'app, dopo un consenso manuale, apre una sessione **in uscita** verso
 
 ## Risultato desiderato
 Una volta sviluppato anche un connettore accessibile dall'assistente, si potrà chiedere di eseguire test nell'ambiente Windows sul Galaxy senza aprire una porta WAN. Nessuna di queste capacità è disponibile nella prima APK P0.
+
+## Stato implementazione APK P0.2
+- UI locale in tre lingue: English, Italiano, Français.
+- Menu connessione accessibile dall'app, con stato disconnesso.
+- Pulsante di avvio DISABILITATO perché non è presente un backend.
+- Pulsante stop che chiude qualsiasi sessione registrata nel gate; nella P0.2 nessuna sessione può essere creata.
+- Chiusura/disattivazione del gate anche quando l'app passa in background.
+- Conferma tramite AndroidManifest: nessun permesso INTERNET.
+- Test sul telefono ancora da eseguire: nessuna promessa di connettività già funzionante.
