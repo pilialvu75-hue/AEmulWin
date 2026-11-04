@@ -60,12 +60,20 @@ jobs:
           grep -Fq 'GuestNetworkPolicy.isGuestNetworkAllowed(this)' "$MAIN"
           grep -Fq 'connect.setEnabled(false)' "$MAIN"
           grep -Fq 'getBoolean(GUEST_NETWORK, false)' app/src/main/java/org/aemulwin/GuestNetworkPolicy.java
-          # The P0 diagnostic build is not permitted to contain network clients/listeners.
-          if grep -R -E 'java[.]net[.]Socket|ServerSocket|HttpURLConnection|OkHttpClient|WebSocket|android[.]webkit[.]WebView' app/src/main/java; then
-            echo '::error::P0 must not start a network transport'
+          # Only the official-release updater is allowed to perform HTTPS requests.
+          if grep -R -E 'java[.]net[.]Socket|ServerSocket|OkHttpClient|WebSocket|android[.]webkit[.]WebView' app/src/main/java; then
+            echo '::error::Unexpected network transport'
             exit 1
           fi
-          echo 'Three-language menu, guest-network consent and remote-off safeguards: PASS'
+          if grep -R -n -E 'HttpURLConnection|openConnection[(]' app/src/main/java | grep -v 'UpdateClient.java:'; then
+            echo '::error::Network outside official updater'
+            exit 1
+          fi
+          grep -Fq 'android.permission.REQUEST_INSTALL_PACKAGES' "$MANIFEST"
+          grep -Fq 'android:exported="false"' "$MANIFEST"
+          grep -Fq 'class UpdateActivity' app/src/main/java/org/aemulwin/UpdateActivity.java
+          grep -Fq 'getPackageArchiveInfo' app/src/main/java/org/aemulwin/UpdateClient.java
+          echo 'Three-language menu, guest network control, explicit updater and remote-off safeguards: PASS'
       - uses: actions/upload-artifact@v4
         with:
           name: AEmulWin-P0-debug-APK
