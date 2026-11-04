@@ -10,8 +10,25 @@ android {
         applicationId 'org.aemulwin'
         minSdk 28
         targetSdk 35
-        versionCode 3
-        versionName '0.3.0'
+        versionCode 4
+        versionName '0.4.0'
+    }
+
+    // Consistent signing is mandatory for in-app updates. Secrets are supplied
+    // only by GitHub Actions secure repository secrets, never stored in git.
+    signingConfigs {
+        production {
+            def encoded = System.getenv('AEMULWIN_KEYSTORE_B64')
+            if (encoded) {
+                def keyFile = file("$buildDir/secure-signing/aemulwin-release.keystore")
+                keyFile.parentFile.mkdirs()
+                keyFile.bytes = java.util.Base64.getDecoder().decode(encoded)
+                storeFile keyFile
+                storePassword System.getenv('AEMULWIN_STORE_PASSWORD')
+                keyAlias System.getenv('AEMULWIN_KEY_ALIAS')
+                keyPassword System.getenv('AEMULWIN_KEY_PASSWORD')
+            }
+        }
     }
 
     buildTypes {
@@ -20,7 +37,9 @@ android {
         }
         release {
             minifyEnabled false
-            // Release signing is intentionally not configured yet.
+            if (System.getenv('AEMULWIN_KEYSTORE_B64')) {
+                signingConfig signingConfigs.production
+            }
         }
     }
 
