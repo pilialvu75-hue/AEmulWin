@@ -1,4 +1,4 @@
-name: Android P0 smoke APK
+name: AEmulWin Android debug CI (not signed for OTA)
 
 on:
   workflow_dispatch:
@@ -9,10 +9,11 @@ on:
       - "build.gradle"
       - "settings.gradle"
       - "gradle.properties"
+      - "VERSION.txt"
       - ".github/workflows/android-debug.yml"
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   debug-apk:
@@ -73,6 +74,9 @@ jobs:
           grep -Fq 'android:exported="false"' "$MANIFEST"
           grep -Fq 'class UpdateActivity' app/src/main/java/org/aemulwin/UpdateActivity.java
           grep -Fq 'getPackageArchiveInfo' app/src/main/java/org/aemulwin/UpdateClient.java
+          grep -Fq 'Settings' app/src/main/java/org/aemulwin/UpdateActivity.java
+          grep -Fq 'getBoolean' app/src/main/java/org/aemulwin/GuestNetworkPolicy.java
+          test -s VERSION.txt
           echo 'Three-language menu, guest network control, explicit updater and remote-off safeguards: PASS'
       - uses: actions/upload-artifact@v4
         with:
@@ -80,20 +84,3 @@ jobs:
           path: app/build/outputs/apk/debug/app-debug.apk
           retention-days: 7
           if-no-files-found: error
-      - name: Publish directly downloadable Android P0.3 test APK
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        shell: bash
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          TAG=v0.3.0-test
-          APK=app/build/outputs/apk/debug/app-debug.apk
-          test -s "$APK"
-          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
-            echo "Prerelase $TAG already exists; leaving it unchanged."
-            exit 0
-          fi
-          cp "$APK" AEmulWin-0.3.0-test.apk
-          sha256sum AEmulWin-0.3.0-test.apk > AEmulWin-0.3.0-test.sha256
-          gh release create "$TAG" AEmulWin-0.3.0-test.apk AEmulWin-0.3.0-test.sha256             --repo "$GITHUB_REPOSITORY" --prerelease             --title "AEmulWin 0.3.0 — first S24 test (diagnostics only)"             --notes "Standalone Android test APK with EN/IT/FR, device diagnostics, guest Internet preference and remote session disabled. It DOES NOT run Windows programs yet. Debug signing may differ from previous CI builds: do not attempt to update another app. No changes to Ai-orchestrator-riserva or WEmulDroid."
