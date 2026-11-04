@@ -110,7 +110,7 @@ public final class MainActivity extends Activity {
                 int level = battery.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
                 int scale = battery.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
                 if (level >= 0 && scale > 0) {
-                    batteryText = String.format(Locale.ITALIANO,
+                    batteryText = String.format(Locale.ITALIAN,
                         "%.0f%%", (100.0 * level / scale));
                 }
             }
@@ -166,7 +166,7 @@ public final class MainActivity extends Activity {
     }
 
     private static String mib(long bytes) {
-        return String.format(Locale.ITALIANO, "%.0f", bytes / 1048576.0);
+        return String.format(Locale.ITALIAN, "%.0f", bytes / 1048576.0);
     }
 
     private Button button(String title) {
