@@ -33,7 +33,7 @@ import java.util.Map;
 
 /**
  * AEmulWin P0 diagnostic shell.
- * This APK has no INTERNET permission, no listening server, and no Wine runtime.
+ * The update checker uses explicit HTTPS requests. Remote control is disabled; no Wine runtime.
  */
 public final class MainActivity extends Activity {
     private static final int BG = Color.rgb(14, 19, 30);
@@ -49,6 +49,9 @@ public final class MainActivity extends Activity {
     static {
         put("subtitle", "Windows on Android — independent lab", "Windows su Android — laboratorio indipendente", "Windows sur Android — laboratoire indépendant");
         put("language", "Language", "Lingua", "Langue");
+        put("settings", "Settings", "Impostazioni", "Paramètres");
+        put("settingsHint", "Choose the operation to configure.", "Scegli la funzione da configurare.", "Choisissez le réglage à configurer.");
+        put("updates", "Updates — stable / beta", "Aggiornamenti — stabile / beta", "Mises à jour — stable / bêta");
         put("engineState", "P0 PROTOTYPE — Windows runtime NOT installed.", "PROTOTIPO P0 — motore Windows NON installato.", "PROTOTYPE P0 — moteur Windows NON installé.");
         put("remoteState", "Remote access OFF. No port is open.", "Accesso remoto DISATTIVATO. Nessuna porta aperta.", "Accès à distance DÉSACTIVÉ. Aucun port ouvert.");
         put("intro", "First test: inspect Android version, RAM, ABI, display, battery and graphics. No Windows software or heavy benchmarks are started.", "Prima prova: verifica Android, RAM, architettura, schermo, batteria e grafica. Nessun programma Windows o benchmark pesante viene avviato.", "Premier test : vérifier Android, RAM, architecture, écran, batterie et graphisme. Aucun programme Windows ni test intensif n'est lancé.");
@@ -99,6 +102,7 @@ public final class MainActivity extends Activity {
 
     private int languageIndex = 0;
     private boolean remotePage = false;
+    private boolean settingsPage = false;
     private String lastReport;
     private TextView reportView;
     private TextView remoteStatusView;
@@ -170,6 +174,8 @@ public final class MainActivity extends Activity {
 
         if (remotePage) {
             renderRemote(content);
+        } else if (settingsPage) {
+            renderSettings(content);
         } else {
             renderDiagnostics(content);
         }
@@ -191,10 +197,11 @@ public final class MainActivity extends Activity {
         addWithGap(content, copy, 10);
         copy.setOnClickListener(v -> copyReport());
 
-        Button remote = button(t("remoteMenu"));
-        addWithGap(content, remote, 10);
-        remote.setOnClickListener(v -> {
-            remotePage = true;
+        Button settings = button(t("settings"));
+        addWithGap(content, settings, 10);
+        settings.setOnClickListener(v -> {
+            settingsPage = true;
+            remotePage = false;
             renderScreen();
         });
 
@@ -203,6 +210,31 @@ public final class MainActivity extends Activity {
         reportView.setBackgroundColor(Color.rgb(25, 32, 46));
         addWithGap(content, reportView, 22);
         addWithGap(content, label(t("privacy"), 13, MUTED, false), 18);
+    }
+
+    private void renderSettings(LinearLayout content) {
+        addWithGap(content, label(t("settings"), 24, TEXT, true), 20);
+        addWithGap(content, label(t("settingsHint"), 15, MUTED, false), 12);
+
+        Button updates = button(t("updates"));
+        addWithGap(content, updates, 22);
+        updates.setOnClickListener(v ->
+            startActivity(new Intent(this, UpdateActivity.class)));
+
+        Button remote = button(t("remoteMenu"));
+        addWithGap(content, remote, 10);
+        remote.setOnClickListener(v -> {
+            settingsPage = false;
+            remotePage = true;
+            renderScreen();
+        });
+
+        Button back = button(t("back"));
+        addWithGap(content, back, 20);
+        back.setOnClickListener(v -> {
+            settingsPage = false;
+            renderScreen();
+        });
     }
 
     private void renderRemote(LinearLayout content) {
@@ -241,6 +273,7 @@ public final class MainActivity extends Activity {
         addWithGap(content, back, 20);
         back.setOnClickListener(v -> {
             remotePage = false;
+            settingsPage = true;
             renderScreen();
         });
     }
@@ -249,6 +282,10 @@ public final class MainActivity extends Activity {
     public void onBackPressed() {
         if (remotePage) {
             remotePage = false;
+            settingsPage = true;
+            renderScreen();
+        } else if (settingsPage) {
+            settingsPage = false;
             renderScreen();
         } else {
             super.onBackPressed();
