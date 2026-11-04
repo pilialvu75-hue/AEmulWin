@@ -1,50 +1,52 @@
-# AEmulWin — Windows applications on Android
+# AEmulWin — applicazioni Windows su Android
 
-**Progetto indipendente — repository ufficiale `pilialvu75-hue/AEmulWin`:** AEmulWin nasce per eseguire software Windows su Android, inizialmente su Galaxy S24 FE. **Questo repository NON è Ai-orchestrator-riserva e NON deve importare/modificare codice dal progetto principale.** Non è collegato a WEmulDroid.
+**Repository ufficiale: pilialvu75-hue/AEmulWin.** Progetto autonomo destinato inizialmente al Samsung Galaxy S24 FE. NON modifica Ai-orchestrator-riserva e NON dipende da WEmulDroid.
 
-> Stato iniziale: prototipo Android **P0 hardware/diagnostica**, NON un emulatore Windows già funzionante. Per eseguire applicazioni .exe servirà in una fase distinta un motore Wine + Box64 / alternativa equivalente verificata sul dispositivo, con licenze e dipendenze gestite correttamente.
+**Stato reale:** versione Android **0.3.0 P0 — diagnostica e interfaccia**, non ancora un emulatore Windows eseguibile. L'integrazione Wine/Box64 avverrà soltanto dopo i test del telefono, con verifiche hardware e licenze.
 
-## Perché iniziare con un prototipo leggero
+## APK diretta per il Galaxy S24 FE (senza ZIP Actions)
 
-Il Galaxy S24 FE ha 8 GB RAM: è più sensato raccogliere caratteristiche reali, controllare ABI, Android, memoria disponibile e schermo, e solo dopo installare un sistema Windows-compatibile più esigente. Il target non è un'installazione completa di Microsoft Windows: il primo obiettivo pratico è l'esecuzione di una semplice applicazione Windows tramite strato di compatibilità.
+**Scarica la release pubblica 0.3.0-test:**
 
-## Funzioni della prima APK
+https://github.com/pilialvu75-hue/AEmulWin/releases/download/v0.3.0-test/AEmulWin-0.3.0-test.apk
 
-- Menu lingua **English / Italiano / Français**: cambia tutti i testi della UI e della diagnosi e conserva la scelta ai successivi avvii
-- Diagnostica RAM/ABI/schermo/batteria e versione Android, eseguita **solo dopo un tocco**
-- Copia diagnostica negli appunti per condividerla volontariamente
-- Stato del motore Windows: **non integrato**, senza simulare esecuzioni .exe
-- **Menu Connessione remota** con stato visibile, futuro pulsante di attivazione disabilitato finché non esiste un relay autenticato, e pulsante **Interrompi / revoca** già presente
-- Ponte di controllo remoto **non implementato in questa APK**: nessuna porta aperta, nessuna connessione di rete e nessuna esecuzione comandi
+- [Pagina della release e checksum SHA-256](https://github.com/pilialvu75-hue/AEmulWin/releases/tag/v0.3.0-test)
+- [Build CI Android PASS](https://github.com/pilialvu75-hue/AEmulWin/actions/runs/41754374993)
 
-L'applicazione in questa fase non richiede permessi di rete né accesso a file privati.
+Il file è un'APK debug di prova. Può richiedere l'autorizzazione del browser per installare applicazioni. La firma debug creata su GitHub potrebbe differire da quella delle vecchie build e quindi impedire l'aggiornamento di **AEmulWin**; non toccare né disinstallare Ai-orchestrator-riserva.
 
-## Roadmap e sicurezza
+## Prima prova — nessun benchmark pesante
 
-- [Roadmap verificabile](docs/ROADMAP.md)
-- [Ponte remoto opt-in: progettazione](docs/REMOTE_CONTROL.md)
-- [Proposta futura: hub Android condiviso](docs/ANDROID_HUB_FUTURE.md)
-- [Scelta del motore e condizioni di licenza](docs/ENGINE_RESEARCH.md)
+1. Installa e apri l'APK 0.3.0 sul S24 FE.
+2. Seleziona **English, Italiano, Français** e prova che la scelta rimanga dopo la chiusura.
+3. Premi **Analizza questo telefono** (o l'equivalente nella lingua scelta), poi **Copia diagnosi**.
+4. Apri **Rete e connessione remota**: la sessione remota deve indicare **SCOLLEGATO**, attivazione non disponibile e interruzione presente.
+5. Attiva/disattiva **Consenti Internet ai programmi Windows (futuro)**, chiudi e riapri l'app: la preferenza deve conservarsi.
+6. Non vengono avviati programmi Windows: il loro motore non è ancora installato.
 
-## Prima APK diagnostica (build verificata)
+## Permessi Internet: due livelli separati
 
-Le APK debug sono pubblicate come artefatto **AEmulWin-P0-debug-APK** (ZIP contenente `app-debug.apk`) nella [pagina Actions](https://github.com/pilialvu75-hue/AEmulWin/actions/workflows/android-debug.yml). Seleziona la **build verde più recente**: l'artefatto è temporaneo e ha conservazione impostata a 7 giorni.
+Android concede il permesso **INTERNET** all'installazione: non appare come richiesta manuale revocabile allo stesso modo di fotocamera e microfono. AEmulWin 0.3.0 dichiara **INTERNET** e **ACCESS_NETWORK_STATE** per preparare applicazioni Windows che richiedano rete.
 
-Per provarla su Galaxy S24 FE:
-1. Apri il workflow GitHub da un browser con accesso all'account.
-2. Scarica l'artefatto AEmulWin-P0-debug-APK.
-3. Estrai l'APK dallo ZIP e installa l'app AEmulWin, autorizzando l'installazione esterna solo se richiesta.
-4. Apri AEmulWin e prova il menu **Language / Lingua / Langue**, scegliendo a turno **English**, **Italiano**, **Français**; verifica che la scelta rimanga anche dopo aver chiuso e riaperto l'app.
-5. Premi **Inspect this phone / Analizza questo telefono / Analyser ce téléphone**, poi **Copy / Copia / Copier** se vuoi condividere il report.
-6. Apri il **menu connessione remota**: lo stato deve indicare scollegato, **Attiva** deve risultare disabilitato e **Interrompi / revoca** deve essere utilizzabile senza creare connessioni.
-7. Non eseguire giochi o test pesanti: questa fase serve soltanto a verificare l'interfaccia e le informazioni hardware.
+Il menu contiene una preferenza dedicata ai **futuri programmi Windows**, disattivata inizialmente. Oggi **non cambia i permessi Android e non può bloccare una rete Windows inesistente**. Quando integreremo il motore, esso dovrà applicare davvero questa regola e dimostrare che OFF impedisce i collegamenti di rete dei programmi ospitati.
 
-**Il primo APK è stato compilato, ma l'app aggiornata e la sua nuova interfaccia devono ancora superare la CI e il test sul telefono fisico.** Non contiene un motore Windows, non consente l'accesso remoto e non include ancora aggiornamenti in-app.
+Il **controllo remoto** è separato dal traffico dei programmi Windows: non è implementato, non apre porte e non effettua chiamate remote in questa versione.
 
-## Indirizzo GitHub
+## Lingue
 
-Il repository originariamente vuoto è stato rinominato correttamente in **pilialvu75-hue/AEmulWin**. Rimane distinto dal progetto principale Ai-orchestrator-riserva.
+- English
+- Italiano
+- Français
 
-## Licenze
+Menu e report diagnostici disponibili nelle tre lingue, con scelta salvata localmente.
 
-Il codice originale del launcher è MIT. Wine/Winlator/Box64 e gli altri componenti esterni restano soggetti alle loro specifiche licenze: nessun componente terzo è stato copiato o redistribuito in questa fase.
+## Sicurezza, licenze, roadmap
+
+- [Roadmap indipendente](docs/ROADMAP.md)
+- [Controllo remoto opt-in — non ancora operativo](docs/REMOTE_CONTROL.md)
+- [Idea futura dell'hub Android multi-app](docs/ANDROID_HUB_FUTURE.md)
+- [Valutazione Wine/Box64/Winlator e licenze](docs/ENGINE_RESEARCH.md)
+
+La prima APK non distribuisce Wine, Box64, DLL di Windows o altro codice di terzi. Il launcher originale è MIT; i componenti futuri manterranno le rispettive licenze.
+
+La compilazione è PASS, **ma l'utilizzo sul Galaxy fisico deve ancora essere verificato**.
