@@ -19,6 +19,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.Spinner;
@@ -53,9 +54,9 @@ public final class MainActivity extends Activity {
         put("intro", "First test: inspect Android version, RAM, ABI, display, battery and graphics. No Windows software or heavy benchmarks are started.", "Prima prova: verifica Android, RAM, architettura, schermo, batteria e grafica. Nessun programma Windows o benchmark pesante viene avviato.", "Premier test : vérifier Android, RAM, architecture, écran, batterie et graphisme. Aucun programme Windows ni test intensif n'est lancé.");
         put("diagnose", "Inspect this phone", "Analizza questo telefono", "Analyser ce téléphone");
         put("copy", "Copy diagnostic report", "Copia diagnosi", "Copier le diagnostic");
-        put("remoteMenu", "Remote connection menu", "Menu connessione remota", "Menu de connexion à distance");
+        put("remoteMenu", "Network and remote controls", "Rete e connessione remota", "Réseau et connexion à distance");
         put("placeholder", "Tap «Inspect this phone» to start.", "Tocca «Analizza questo telefono» per iniziare.", "Appuyez sur «Analyser ce téléphone» pour commencer.");
-        put("privacy", "Privacy: no Internet permission, no account and no automatic report upload. Share a report only if you choose to copy it.", "Privacy: nessun permesso Internet, nessun account e nessun invio automatico. Condividi il report soltanto se scegli di copiarlo.", "Confidentialité : aucun accès Internet, aucun compte et aucun envoi automatique. Partagez le rapport uniquement si vous décidez de le copier.");
+        put("privacy", "Privacy: Android Internet permission is declared, but this P0 build opens no connections and sends no reports. Share only if you choose to copy one.", "Privacy: il permesso Internet Android è dichiarato, ma questa versione P0 non apre connessioni e non invia report. Condividi un report soltanto se decidi di copiarlo.", "Confidentialité : l’autorisation Internet Android est déclarée, mais cette version P0 ne crée aucune connexion et n’envoie aucun rapport. Partagez seulement si vous décidez de copier le rapport.");
         put("done", "Local diagnostic completed", "Diagnostica locale completata", "Diagnostic local terminé");
         put("copyFirst", "Run the diagnostic first", "Esegui prima la diagnostica", "Lancez d'abord le diagnostic");
         put("copied", "Report copied", "Diagnosi copiata", "Rapport copié");
@@ -77,10 +78,14 @@ public final class MainActivity extends Activity {
         put("engineNotInstalled", "Wine/Box64 engine: NOT INSTALLED", "Motore Wine/Box64: NON INSTALLATO", "Moteur Wine/Box64 : NON INSTALLÉ");
         put("bridgeOff", "Remote control bridge: OFF", "Ponte di controllo remoto: DISATTIVATO", "Passerelle de contrôle à distance : DÉSACTIVÉE");
         put("noWindowsTests", "No Windows performance tests have been run.", "Nessun test di prestazioni Windows eseguito.", "Aucun test de performance Windows réalisé.");
-        put("remoteTitle", "Remote connection", "Connessione remota", "Connexion à distance");
+        put("remoteTitle", "Network and remote access", "Rete e accesso remoto", "Réseau et accès à distance");
+        put("guestNetwork", "Allow Internet to Windows programs (future)", "Consenti Internet ai programmi Windows (futuro)", "Autoriser Internet aux programmes Windows (futur)");
+        put("guestExplain", "Preference saved locally, OFF by default. There is no Windows engine yet, so it has no effect. A future engine must enforce this setting at its network bridge; this is not an Android permission switch.", "Preferenza salvata solo sul telefono, inizialmente DISATTIVATA. Il motore Windows non esiste ancora, quindi non ha effetto. Il futuro motore dovrà bloccare la rete quando lo switch è spento; non è un permesso Android revocabile.", "Préférence locale, DÉSACTIVÉE par défaut. Le moteur Windows n’existe pas encore : aucun effet actuel. Le futur moteur devra bloquer le réseau lorsque cette option est désactivée ; ce n’est pas une autorisation Android révocable.");
+        put("guestSaved", "Windows-app Internet preference saved (not operational yet).", "Preferenza Internet dei programmi Windows salvata (non ancora operativa).", "Préférence Internet des programmes Windows enregistrée (pas encore opérationnelle).");
+        put("remoteSeparate", "Remote access is separate from guest Internet and is unavailable in this build.", "Il controllo remoto è distinto da Internet dei programmi Windows e non è disponibile in questa build.", "L’accès distant est indépendant d’Internet des programmes Windows et indisponible dans cette version.");
         put("connectionStatus", "Current status", "Stato attuale", "État actuel");
         put("disconnected", "DISCONNECTED", "SCOLLEGATO", "DÉCONNECTÉ");
-        put("whyDisabled", "The secure relay and connector do not exist yet. Remote access cannot be activated in this build. This phone has no listening port and no INTERNET permission.", "Il relay sicuro e il connettore non sono ancora disponibili. Questa build non può attivare l'accesso remoto. Il telefono non apre porte e l'app non ha permesso INTERNET.", "Le relais sécurisé et le connecteur ne sont pas encore disponibles. Cette version ne peut pas activer l'accès à distance. Aucun port n'est ouvert et l'application n'a pas l'autorisation INTERNET.");
+        put("whyDisabled", "The authenticated relay and connector do not exist yet. Remote control is disabled: this build opens no remote connections or listening ports.", "Il relay autenticato e il connettore non esistono ancora. Il controllo remoto resta disattivato: questa versione non apre connessioni remote né porte in ascolto.", "Le relais authentifié et le connecteur n’existent pas encore. Le contrôle à distance reste désactivé : cette version ne crée aucune connexion distante ni port d’écoute.");
         put("futureAccess", "Future version: explicit pairing, time-limited permission, visible session status, immediate disconnect and local audit. Never an always-open public port.", "Versione futura: associazione esplicita, permesso temporaneo, stato visibile, disconnessione immediata e registro locale. Mai una porta pubblica sempre aperta.", "Version future : appairage explicite, autorisation temporaire, état visible, déconnexion immédiate et journal local. Jamais de port public ouvert en permanence.");
         put("connect", "Enable remote session (not available)", "Attiva sessione remota (non disponibile)", "Activer la session à distance (indisponible)");
         put("disconnect", "Stop / revoke connection", "Interrompi / revoca connessione", "Arrêter / révoquer la connexion");
@@ -206,6 +211,18 @@ public final class MainActivity extends Activity {
         remoteStatusView = label(t("disconnected"), 20, ACCENT, true);
         addWithGap(content, remoteStatusView, 4);
         addWithGap(content, label(t("whyDisabled"), 15, TEXT, false), 18);
+        CheckBox guestNetwork = new CheckBox(this);
+        guestNetwork.setText(t("guestNetwork"));
+        guestNetwork.setTextColor(TEXT);
+        guestNetwork.setTextSize(15);
+        guestNetwork.setChecked(GuestNetworkPolicy.isGuestNetworkAllowed(this));
+        addWithGap(content, guestNetwork, 16);
+        addWithGap(content, label(t("guestExplain"), 14, MUTED, false), 6);
+        guestNetwork.setOnCheckedChangeListener((button, checked) -> {
+            GuestNetworkPolicy.setGuestNetworkAllowed(this, checked);
+            Toast.makeText(this, t("guestSaved"), Toast.LENGTH_SHORT).show();
+        });
+        addWithGap(content, label(t("remoteSeparate"), 14, MUTED, false), 18);
         addWithGap(content, label(t("futureAccess"), 15, MUTED, false), 18);
 
         Button connect = button(t("connect"));
