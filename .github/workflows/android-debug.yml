@@ -43,6 +43,23 @@ jobs:
           "$SDKMANAGER" --sdk_root="$SDK_ROOT" --install "platforms;android-35" "build-tools;35.0.0" >/dev/null
           gradle :app:assembleDebug --no-daemon --stacktrace
           test -s app/build/outputs/apk/debug/app-debug.apk
+      - name: Validate languages and remote control defaults
+        shell: bash
+        run: |
+          set -euo pipefail
+          MAIN=app/src/main/java/org/aemulwin/MainActivity.java
+          GATE=app/src/main/java/org/aemulwin/RemoteAccessGate.java
+          MANIFEST=app/src/main/AndroidManifest.xml
+          grep -Fq 'LANGUAGE_NAMES = {"English", "Italiano", "Français"}' "$MAIN"
+          grep -Fq 'putString(PREF_LANGUAGE, LANGUAGE_CODES[position])' "$MAIN"
+          grep -Fq 'connect.setEnabled(false)' "$MAIN"
+          grep -Fq 'remoteAccess.stop()' "$MAIN"
+          grep -Fq 'return false; // No authenticated relay/connector exists in P0.' "$GATE"
+          if grep -Fq 'android.permission.INTERNET' "$MANIFEST"; then
+            echo '::error::P0.2 may not request INTERNET permission'
+            exit 1
+          fi
+          echo 'Three-language menu and offline remote access default: PASS'
       - uses: actions/upload-artifact@v4
         with:
           name: AEmulWin-P0-debug-APK
