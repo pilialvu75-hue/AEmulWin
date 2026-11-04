@@ -29,6 +29,8 @@ Il workflow manuale [Publish signed AEmulWin update](../.github/workflows/publis
 
 **Non pubblicare segreti, keystore o password in issue, commit o chat pubbliche. Non reinstallare Ai-orchestrator-riserva; è un'applicazione diversa.**
 
+Le release beta ricevono un `versionCode` progressivo, ad esempio `0.4.0-beta.1` → 40001 e `0.4.0-beta.2` → 40002; la stabile `0.4.0` → 40099. Android può quindi aggiornare dalla beta alla stabile preservando i dati, purché la firma rimanga identica. La serie successiva (es. `0.4.1-beta.1`) utilizza un numero superiore.
+
 Se AEmulWin 0.3 debug è già installata, **potrebbe essere necessario un unico passaggio manuale di sostituzione** per iniziare a utilizzare una futura APK con firma permanente; non tentare forzature che aggirino i controlli Android. Questa limitazione riguarda SOLO AEmulWin.
 
 ## Stato delle prove
